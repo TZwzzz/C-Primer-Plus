@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/wilson/OK-RK3588
+CMAKE_SOURCE_DIR = /root/wilson
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/wilson/OK-RK3588/build
+CMAKE_BINARY_DIR = /root/wilson/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/cv_tracking.dir/depend.make
@@ -59,16 +59,16 @@ include CMakeFiles/cv_tracking.dir/flags.make
 
 CMakeFiles/cv_tracking.dir/cv_tracking.cpp.o: CMakeFiles/cv_tracking.dir/flags.make
 CMakeFiles/cv_tracking.dir/cv_tracking.cpp.o: ../cv_tracking.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/wilson/OK-RK3588/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/cv_tracking.dir/cv_tracking.cpp.o"
-	/opt/atk-dlrv1126-toolchain/usr/bin/arm-linux-gnueabihf-g++ --sysroot=/opt/atk-dlrv1126-toolchain/arm-buildroot-linux-gnueabihf/sysroot  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cv_tracking.dir/cv_tracking.cpp.o -c /home/wilson/OK-RK3588/cv_tracking.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/root/wilson/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/cv_tracking.dir/cv_tracking.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/cv_tracking.dir/cv_tracking.cpp.o -c /root/wilson/cv_tracking.cpp
 
 CMakeFiles/cv_tracking.dir/cv_tracking.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/cv_tracking.dir/cv_tracking.cpp.i"
-	/opt/atk-dlrv1126-toolchain/usr/bin/arm-linux-gnueabihf-g++ --sysroot=/opt/atk-dlrv1126-toolchain/arm-buildroot-linux-gnueabihf/sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/wilson/OK-RK3588/cv_tracking.cpp > CMakeFiles/cv_tracking.dir/cv_tracking.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /root/wilson/cv_tracking.cpp > CMakeFiles/cv_tracking.dir/cv_tracking.cpp.i
 
 CMakeFiles/cv_tracking.dir/cv_tracking.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/cv_tracking.dir/cv_tracking.cpp.s"
-	/opt/atk-dlrv1126-toolchain/usr/bin/arm-linux-gnueabihf-g++ --sysroot=/opt/atk-dlrv1126-toolchain/arm-buildroot-linux-gnueabihf/sysroot $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/wilson/OK-RK3588/cv_tracking.cpp -o CMakeFiles/cv_tracking.dir/cv_tracking.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /root/wilson/cv_tracking.cpp -o CMakeFiles/cv_tracking.dir/cv_tracking.cpp.s
 
 # Object files for target cv_tracking
 cv_tracking_OBJECTS = \
@@ -80,7 +80,7 @@ cv_tracking_EXTERNAL_OBJECTS =
 libcv_tracking.a: CMakeFiles/cv_tracking.dir/cv_tracking.cpp.o
 libcv_tracking.a: CMakeFiles/cv_tracking.dir/build.make
 libcv_tracking.a: CMakeFiles/cv_tracking.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/wilson/OK-RK3588/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libcv_tracking.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/root/wilson/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX static library libcv_tracking.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/cv_tracking.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/cv_tracking.dir/link.txt --verbose=$(VERBOSE)
 
@@ -94,6 +94,6 @@ CMakeFiles/cv_tracking.dir/clean:
 .PHONY : CMakeFiles/cv_tracking.dir/clean
 
 CMakeFiles/cv_tracking.dir/depend:
-	cd /home/wilson/OK-RK3588/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/wilson/OK-RK3588 /home/wilson/OK-RK3588 /home/wilson/OK-RK3588/build /home/wilson/OK-RK3588/build /home/wilson/OK-RK3588/build/CMakeFiles/cv_tracking.dir/DependInfo.cmake --color=$(COLOR)
+	cd /root/wilson/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /root/wilson /root/wilson /root/wilson/build /root/wilson/build /root/wilson/build/CMakeFiles/cv_tracking.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/cv_tracking.dir/depend
 
