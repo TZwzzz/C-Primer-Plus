@@ -205,6 +205,7 @@ void *rkmedia_thread(void *args)
   int ret;
   void *frame;
   cv::Rect roi = cv::Rect(100,100,250,250);//选定roi范围
+  
 
   while(1)
   {
@@ -229,6 +230,7 @@ void *rkmedia_thread(void *args)
   while (!quit)
   {
     MEDIA_BUFFER src_mb = NULL;
+    
     src_mb = RK_MPI_SYS_GetMediaBuffer(RK_ID_RGA, 0, -1);
     if (!src_mb)
     {
@@ -237,8 +239,13 @@ void *rkmedia_thread(void *args)
     }
     printf("get src_mb\r\n");
     frame = RK_MPI_MB_GetPtr(src_mb);
+
+    clock_t  startTime = clock();
     cv_tracking(frame,video_width,video_height,
-                  roi.x,roi.y,roi.width,roi.height,MOSSE);
+                  roi.x,roi.y,roi.width,roi.height,KCF);
+    clock_t endTime = clock();
+    double totalTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+    cout << totalTime << "s" << endl;
     RK_MPI_SYS_SendMediaBuffer(RK_ID_VENC, 0, src_mb);
     RK_MPI_MB_ReleaseBuffer(src_mb);
     src_mb = NULL;

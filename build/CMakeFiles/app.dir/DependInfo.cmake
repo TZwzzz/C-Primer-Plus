@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/wilson/OK-RK3588/cv_tracking.cpp" "/home/wilson/OK-RK3588/build/CMakeFiles/cv_tracking.dir/cv_tracking.cpp.o"
+  "/home/wilson/ATK-RV1126-SDK/work/Tracking/main.cpp" "/home/wilson/ATK-RV1126-SDK/work/Tracking/build/CMakeFiles/app.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

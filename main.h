@@ -26,8 +26,10 @@
 
 #define MODEL_INPUT_SIZE 300
 
-RK_U32 video_width = 640;
-RK_U32 video_height = 360;
+using namespace std;
+
+RK_U32 video_width = 1280;
+RK_U32 video_height = 720;
 rtsp_demo_handle g_rtsplive = NULL;
 static rtsp_session_handle g_rtsp_session;
 CODEC_TYPE_E enCodecType = RK_CODEC_TYPE_H264;
