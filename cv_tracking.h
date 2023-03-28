@@ -7,7 +7,7 @@
 #define KCF     0
 #define MOSSE   1
 
-#define PRINT_ROI   1
+#define PRINT_ROI   0
 #define DRAW_ROI    0
 
 

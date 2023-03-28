@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named cv_tracking
+# Target rules for targets named app
 
 # Build rule for target.
-cv_tracking: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 cv_tracking
-.PHONY : cv_tracking
+app: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 app
+.PHONY : app
 
 # fast build rule for target.
-cv_tracking/fast:
-	$(MAKE) -f CMakeFiles/cv_tracking.dir/build.make CMakeFiles/cv_tracking.dir/build
-.PHONY : cv_tracking/fast
+app/fast:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/build
+.PHONY : app/fast
 
-cv_tracking.o: cv_tracking.cpp.o
+main.o: main.cpp.o
 
-.PHONY : cv_tracking.o
+.PHONY : main.o
 
 # target to build an object file
-cv_tracking.cpp.o:
-	$(MAKE) -f CMakeFiles/cv_tracking.dir/build.make CMakeFiles/cv_tracking.dir/cv_tracking.cpp.o
-.PHONY : cv_tracking.cpp.o
+main.cpp.o:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/main.cpp.o
+.PHONY : main.cpp.o
 
-cv_tracking.i: cv_tracking.cpp.i
+main.i: main.cpp.i
 
-.PHONY : cv_tracking.i
+.PHONY : main.i
 
 # target to preprocess a source file
-cv_tracking.cpp.i:
-	$(MAKE) -f CMakeFiles/cv_tracking.dir/build.make CMakeFiles/cv_tracking.dir/cv_tracking.cpp.i
-.PHONY : cv_tracking.cpp.i
+main.cpp.i:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/main.cpp.i
+.PHONY : main.cpp.i
 
-cv_tracking.s: cv_tracking.cpp.s
+main.s: main.cpp.s
 
-.PHONY : cv_tracking.s
+.PHONY : main.s
 
 # target to generate assembly for a file
-cv_tracking.cpp.s:
-	$(MAKE) -f CMakeFiles/cv_tracking.dir/build.make CMakeFiles/cv_tracking.dir/cv_tracking.cpp.s
-.PHONY : cv_tracking.cpp.s
+main.cpp.s:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/main.cpp.s
+.PHONY : main.cpp.s
 
 # Help Target
 help:
@@ -158,10 +158,10 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... cv_tracking"
-	@echo "... cv_tracking.o"
-	@echo "... cv_tracking.i"
-	@echo "... cv_tracking.s"
+	@echo "... app"
+	@echo "... main.o"
+	@echo "... main.i"
+	@echo "... main.s"
 .PHONY : help
 
 

@@ -15,7 +15,7 @@ set(CMAKE_CXX_STANDARD 11)
 add_definitions(-g -O0 -ggdb -gdwarf -funwind-tables -rdynamic)
 add_definitions(-Wno-write-strings -Wno-return-type)
 
-set(COMPILE_STAICT_LIB YES)#是否编译静态库,否则编译出app
+set(COMPILE_STAICT_LIB NO)#是否编译静态库,否则编译出app
 
 
 set(OPENCV_LIBS opencv_dnn opencv_stitching opencv_superres opencv_videostab opencv_aruco opencv_bgsegm opencv_bioinspired opencv_ccalib opencv_dpm opencv_highgui opencv_videoio opencv_face opencv_fuzzy opencv_hfs opencv_img_hash opencv_line_descriptor opencv_optflow opencv_reg opencv_rgbd opencv_saliency opencv_stereo opencv_structured_light opencv_phase_unwrapping opencv_surface_matching opencv_tracking opencv_datasets opencv_plot opencv_xfeatures2d opencv_shape opencv_video opencv_ml opencv_ximgproc opencv_xobjdetect opencv_objdetect opencv_calib3d opencv_imgcodecs opencv_features2d opencv_flann opencv_freetype opencv_xphoto opencv_photo opencv_imgproc opencv_core)
