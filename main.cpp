@@ -16,6 +16,14 @@ int main(int argc, char *argv[])
   RK_U32 fps = 20;
   int ret;
 
+  rga_arg_t rga_arg;
+  rga_arg.u32SrcWidth = video_width;
+  rga_arg.u32SrcHeight = video_height;
+  rga_arg.u32RgaX = result_rect2d.x;
+  rga_arg.u32RgaY = result_rect2d.y;
+  rga_arg.u32RgaWidth = result_rect2d.width;
+  rga_arg.u32RgaHeight = result_rect2d.height;
+
   printf("\n###############################################\n");
   printf("VI CameraIdx: %d\npDeviceName: %s\nResolution: %dx%d\n\n",
           s32CamId,pDeviceName_01,video_width,video_height);
@@ -123,7 +131,7 @@ int main(int argc, char *argv[])
     break;
   }
 
-  venc_chn_attr.stVencAttr.imageType = IMAGE_TYPE_BGR888;
+  venc_chn_attr.stVencAttr.imageType = IMAGE_TYPE_NV12;
   venc_chn_attr.stVencAttr.u32PicWidth = video_width;
   venc_chn_attr.stVencAttr.u32PicHeight = video_height;
   venc_chn_attr.stVencAttr.u32VirWidth = video_width;
@@ -152,9 +160,11 @@ int main(int argc, char *argv[])
     return -1;
   }
   pthread_t rkmedia_tidp;
+  pthread_t tracking_tidp;
   pthread_t rtsp_tidp;              // rtsp线程tid
   pthread_t key_tidp;
-  pthread_create(&rkmedia_tidp, NULL, rkmedia_thread, NULL);
+  pthread_create(&rkmedia_tidp, NULL, rkmedia_thread, &rga_arg);
+  pthread_create(&tracking_tidp, NULL, tracking_thread, &rga_arg);
   pthread_create(&rtsp_tidp, NULL, venc_rtsp_tidp, NULL);
   pthread_create(&key_tidp, NULL, key_thread, NULL);
   printf("%s initial finish\n", __func__);
@@ -198,36 +208,120 @@ int main(int argc, char *argv[])
   return 0;
 }
 
+/*************************************************************************/
+// not set buffer 0x00000000 before draw
+static int RGA_Rect_draw2(rga_buffer_t buf, RK_U32 x, RK_U32 y,
+                                RK_U32 width, RK_U32 height,
+                                RK_U32 line_pixel) {
+  im_rect rect_up = {(int)x, (int)y, (int)width, (int)line_pixel};
+  im_rect rect_buttom = {(int)x, (int)(y + height - line_pixel), (int)width, (int)line_pixel};
+  im_rect rect_left = {(int)x, (int)y, (int)line_pixel, (int)height};
+  im_rect rect_right = {(int)(x + width - line_pixel), (int)y, (int)line_pixel, (int)height};
+  int STATUS = imfill(buf, rect_up, 0x0000ff00);
+  STATUS |= imfill(buf, rect_buttom, 0x0000ff00);
+  STATUS |= imfill(buf, rect_left, 0x0000ff00);
+  STATUS |= imfill(buf, rect_right, 0x0000ff00);
+  return STATUS;
+}
+
+static IM_STATUS RGA_Clear_Rect(rga_buffer_t buf, RK_U32 width, RK_U32 height) {
+  im_rect rect_all = {0, 0, (int)width, (int)height};
+  IM_STATUS STATUS = imfill(buf, rect_all, 0x00000000);
+  return STATUS;
+}
+/****************************************************************************/
+
 void *rkmedia_thread(void *args)
 {
   pthread_detach(pthread_self());
 
   int ret;
-  void *frame;
-  cv::Rect roi = cv::Rect(100,100,250,250);//选定roi范围
-  
+  rga_arg_t *rga_arg = (rga_arg_t *)args;
 
-  while(1)
+  while (!quit)
   {
     MEDIA_BUFFER src_mb = NULL;
-    src_mb = RK_MPI_SYS_GetMediaBuffer(RK_ID_RGA, 0, -1);
+    
+    src_mb = RK_MPI_SYS_GetMediaBuffer(RK_ID_VI, 0, -1);
     if (!src_mb)
     {
       printf("ERROR: RK_MPI_SYS_GetMediaBuffer get null buffer!\n");
       break;
     }
-    cv::Mat frame = cv::Mat(video_height,video_width,CV_8UC3,RK_MPI_MB_GetPtr(src_mb));
+    /********************************/
+    rga_buffer_t pat;
+    rga_buffer_t src;
+    MEDIA_BUFFER pat_mb = NULL;
+    int STATUS;
+    MB_IMAGE_INFO_S stImageInfo = {
+        rga_arg->u32SrcWidth, rga_arg->u32SrcHeight, rga_arg->u32SrcWidth,
+        rga_arg->u32SrcHeight, IMAGE_TYPE_ARGB8888};
+    pat_mb = RK_MPI_MB_CreateImageBuffer(&stImageInfo, RK_TRUE, 0);
+    if (!pat_mb) 
+    {
+      printf("ERROR: RK_MPI_MB_CreateImageBuffer get null buffer!\n");
+      break;
+    }
+    src = wrapbuffer_fd(RK_MPI_MB_GetFD(src_mb), rga_arg->u32SrcWidth,
+                        rga_arg->u32SrcHeight, RK_FORMAT_YCbCr_420_SP);
+    pat = wrapbuffer_fd(RK_MPI_MB_GetFD(pat_mb), rga_arg->u32SrcWidth,
+                              rga_arg->u32SrcHeight, RK_FORMAT_RGBA_8888);
+    RGA_Clear_Rect(pat, rga_arg->u32SrcWidth, rga_arg->u32SrcHeight);
+    rga_arg->u32RgaX = (RK_U32)result_rect2d.x;
+    rga_arg->u32RgaY = (RK_U32)result_rect2d.y;
+    rga_arg->u32RgaWidth = (RK_U32)result_rect2d.width;
+    rga_arg->u32RgaHeight = (RK_U32)result_rect2d.height;
+    if(rga_arg->u32RgaX + rga_arg->u32RgaWidth > rga_arg->u32SrcWidth)
+    {
+      rga_arg->u32RgaX = rga_arg->u32SrcWidth - rga_arg->u32RgaWidth;
+    }
+    if(rga_arg->u32RgaY + rga_arg->u32RgaHeight > rga_arg->u32SrcHeight)
+    {
+      rga_arg->u32RgaY = rga_arg->u32SrcHeight - rga_arg->u32RgaHeight;
+    }
+    STATUS = RGA_Rect_draw2(pat, rga_arg->u32RgaX, rga_arg->u32RgaY,
+                        rga_arg->u32RgaWidth, rga_arg->u32RgaHeight, 5);
+    if (STATUS != IM_STATUS_SUCCESS)
+      printf(">>>>>>>>>>>>>>>>RGA_Rect_draw failed: %s\n",imStrError(STATUS));
+    STATUS = imcomposite(src, pat, src, IM_ALPHA_BLEND_DST_OVER);
+    if (STATUS != IM_STATUS_SUCCESS) 
+    {
+      printf(">>>>>>>>>>>>>>>>imblend failed: %s\n", imStrError(STATUS));
+      RK_MPI_MB_ReleaseBuffer(pat_mb);
+      RK_MPI_MB_ReleaseBuffer(src_mb);
+      quit = true;
+      break;
+    }
+    RK_MPI_SYS_SendMediaBuffer(RK_ID_VENC, 0, src_mb);
+    RK_MPI_MB_ReleaseBuffer(pat_mb);
+    RK_MPI_MB_ReleaseBuffer(src_mb);
+
+    /********************************/
+    src_mb = NULL;
+  }
+  return NULL;
+}
+
+void *tracking_thread(void *args)
+{
+  void *frame;
+  rga_arg_t *rga_arg = (rga_arg_t *)args;
+  cv::Rect2d roi;
+  roi.x = (double)rga_arg->u32RgaX;
+  roi.y = (double)rga_arg->u32RgaY;
+  roi.width = (double)rga_arg->u32RgaWidth;
+  roi.height = (double)rga_arg->u32RgaHeight;
+
+  while(1)
+  {
     if(pressKey == true)
     {
       printf("Press Key\r\n");
       break;
     }
-    cv::rectangle(frame,roi,cv::Scalar(0,255,255),5,8,0);
-    RK_MPI_SYS_SendMediaBuffer(RK_ID_VENC, 0, src_mb);
-    RK_MPI_MB_ReleaseBuffer(src_mb);
-    src_mb = NULL;
+    usleep(500000);
   }
-  while (!quit)
+  while(!quit)
   {
     MEDIA_BUFFER src_mb = NULL;
     
@@ -241,16 +335,15 @@ void *rkmedia_thread(void *args)
     frame = RK_MPI_MB_GetPtr(src_mb);
 
     clock_t  startTime = clock();
-    cv_tracking(frame,video_width,video_height,
-                  roi.x,roi.y,roi.width,roi.height,KCF);
+    result_rect2d = cv_tracking(frame,video_width,video_height,roi,&tracking_init,MOSSE);
     clock_t endTime = clock();
     double totalTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
     cout << totalTime << "s" << endl;
-    RK_MPI_SYS_SendMediaBuffer(RK_ID_VENC, 0, src_mb);
+
     RK_MPI_MB_ReleaseBuffer(src_mb);
     src_mb = NULL;
   }
-  return NULL;
+  
 }
 
 void *venc_rtsp_tidp(void *args)

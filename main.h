@@ -28,11 +28,26 @@
 
 using namespace std;
 
-RK_U32 video_width = 1280;
-RK_U32 video_height = 720;
+typedef struct rga_arg_s {
+  RK_U32 u32SrcWidth;
+  RK_U32 u32SrcHeight;
+  RK_U32 u32RgaX;
+  RK_U32 u32RgaY;
+  RK_U32 u32RgaWidth;
+  RK_U32 u32RgaHeight;
+  RK_U32 u32Mode;
+} rga_arg_t;
+
+bool tracking_init = true;
+cv::Rect2d result_rect2d = cv::Rect2d(100,100,150,200);
+
+RK_U32 video_width = 640;
+RK_U32 video_height = 360;
 rtsp_demo_handle g_rtsplive = NULL;
 static rtsp_session_handle g_rtsp_session;
 CODEC_TYPE_E enCodecType = RK_CODEC_TYPE_H264;
+
+
 
 //用于触摸屏配置
 struct tsdev *ts = NULL;
@@ -42,6 +57,8 @@ bool pressKey = false;
 static bool quit = false;
 
 void *rkmedia_thread(void *args);
+
+void *tracking_thread(void *args);
 
 void *venc_rtsp_tidp(void *args);
 

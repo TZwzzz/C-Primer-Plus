@@ -9,12 +9,9 @@ struct tracking_stu
 };
 tracking_stu tracker_stu;
 
-static int cv_tracking_init(int roi_x1,int roi_y1,int width,int height,int tracking_algo = KCF)
+static int cv_tracking_init(cv::Rect2d rect2d,int tracking_algo = KCF)
 {
-  tracker_stu.cv_roi.x = roi_x1;
-  tracker_stu.cv_roi.y = roi_y1;
-  tracker_stu.cv_roi.width = width;
-  tracker_stu.cv_roi.height = height;
+  tracker_stu.cv_roi = rect2d;
   switch(tracking_algo)
   {
     case KCF:
@@ -30,22 +27,21 @@ static int cv_tracking_init(int roi_x1,int roi_y1,int width,int height,int track
   return 0;
 }
 
-int cv_tracking(void *src_mb,int f_width,int f_height,
-                  int roi_x1,int roi_y1,int width,int height,int tracking_algo)
+cv::Rect2d cv_tracking(void *src_mb,int f_width,int f_height,
+                  cv::Rect2d roi,bool *tracking_init,int tracking_algo)
 {
-  static bool single_use = true;
-  if(single_use)
+  if(*tracking_init)
   {
-    single_use = false;
+    *tracking_init = false;
 #if PRINT_ROI
-    printf("Before cv_tracking_init,roi_x:%d  roi_y:%d  width:%d  height:%d\r\n",roi_x1,roi_y1,width,height);
+    printf("Before cv_tracking_init,roi_x:%d  roi_y:%d  width:%d  height:%d\r\n",roi.x,roi.y,roi.width,roi.height);
 #endif
-    cv_tracking_init(roi_x1,roi_y1,width,height,tracking_algo);
+    cv_tracking_init(roi,tracking_algo);
     tracker_stu.cv_frame = Mat(f_height, f_width, CV_8UC3, src_mb);
     if (tracker_stu.cv_frame.rows == 0 || tracker_stu.cv_frame.cols == 0)
     {
       fprintf(stderr,"tracker_stu.cv_frame.rows == 0 || tracker_stu.cv_frame.cols == 0\r\n");
-      return -1;
+      exit(EXIT_FAILURE);
     }
 #if PRINT_ROI
     printf("Before tracker->init,roi_x:%.2f  roi_y:%.2f  width:%.2f  height:%.2f\r\n",
@@ -57,7 +53,7 @@ int cv_tracking(void *src_mb,int f_width,int f_height,
   if (tracker_stu.cv_frame.rows == 0 || tracker_stu.cv_frame.cols == 0)
   {
     fprintf(stderr,"tracker_stu.cv_frame.rows == 0 || tracker_stu.cv_frame.cols == 0\r\n");
-    return -1;
+    exit(EXIT_FAILURE);
   }
 #if PRINT_ROI
   printf("Before tracker->update,roi_x:%.2f  roi_y:%.2f  width:%.2f  height:%.2f\r\n",
@@ -69,6 +65,8 @@ int cv_tracking(void *src_mb,int f_width,int f_height,
   printf("After tracker->update,roi_x:%.2f  roi_y:%.2f  width:%.2f  height:%.2f\r\n",
             tracker_stu.cv_roi.x,tracker_stu.cv_roi.y,tracker_stu.cv_roi.width,tracker_stu.cv_roi.height);
 #endif
+#if DRAW_ROI
   rectangle(tracker_stu.cv_frame,tracker_stu.cv_roi,Scalar(255,0,0),5,8,0);
-  return 0;
+#endif
+  return tracker_stu.cv_roi;
 }
