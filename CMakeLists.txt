@@ -1,7 +1,7 @@
 # @author        Liang Huanyan
 # @email         lianghuanyan@alientek.com
 # http://www.openedv.com/forum.php
-
+project(build std lib)
 cmake_minimum_required(VERSION 3.8)
 message(STATUS "cmake version ${CMAKE_VERSION}")
 
