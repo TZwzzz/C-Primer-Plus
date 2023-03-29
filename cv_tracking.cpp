@@ -44,7 +44,7 @@ cv::Rect2d cv_tracking(void *src_mb,int f_width,int f_height,
   if(*tracking_init)
   {
     *tracking_init = false;
-    
+    tracker_stu.cv_roi = roi;
     tracker_stu.cv_frame = Mat(f_height, f_width, CV_8UC3, src_mb);
     if (tracker_stu.cv_frame.rows == 0 || tracker_stu.cv_frame.cols == 0)
     {
