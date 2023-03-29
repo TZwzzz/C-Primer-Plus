@@ -123,6 +123,62 @@ app/fast:
 	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/build
 .PHONY : app/fast
 
+#=============================================================================
+# Target rules for targets named cv__tracking
+
+# Build rule for target.
+cv__tracking: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 cv__tracking
+.PHONY : cv__tracking
+
+# fast build rule for target.
+cv__tracking/fast:
+	$(MAKE) -f CMakeFiles/cv__tracking.dir/build.make CMakeFiles/cv__tracking.dir/build
+.PHONY : cv__tracking/fast
+
+#=============================================================================
+# Target rules for targets named cv_tracking
+
+# Build rule for target.
+cv_tracking: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 cv_tracking
+.PHONY : cv_tracking
+
+# fast build rule for target.
+cv_tracking/fast:
+	$(MAKE) -f CMakeFiles/cv_tracking.dir/build.make CMakeFiles/cv_tracking.dir/build
+.PHONY : cv_tracking/fast
+
+libcv_tracking/cv_tracking.o: libcv_tracking/cv_tracking.cpp.o
+
+.PHONY : libcv_tracking/cv_tracking.o
+
+# target to build an object file
+libcv_tracking/cv_tracking.cpp.o:
+	$(MAKE) -f CMakeFiles/cv__tracking.dir/build.make CMakeFiles/cv__tracking.dir/libcv_tracking/cv_tracking.cpp.o
+	$(MAKE) -f CMakeFiles/cv_tracking.dir/build.make CMakeFiles/cv_tracking.dir/libcv_tracking/cv_tracking.cpp.o
+.PHONY : libcv_tracking/cv_tracking.cpp.o
+
+libcv_tracking/cv_tracking.i: libcv_tracking/cv_tracking.cpp.i
+
+.PHONY : libcv_tracking/cv_tracking.i
+
+# target to preprocess a source file
+libcv_tracking/cv_tracking.cpp.i:
+	$(MAKE) -f CMakeFiles/cv__tracking.dir/build.make CMakeFiles/cv__tracking.dir/libcv_tracking/cv_tracking.cpp.i
+	$(MAKE) -f CMakeFiles/cv_tracking.dir/build.make CMakeFiles/cv_tracking.dir/libcv_tracking/cv_tracking.cpp.i
+.PHONY : libcv_tracking/cv_tracking.cpp.i
+
+libcv_tracking/cv_tracking.s: libcv_tracking/cv_tracking.cpp.s
+
+.PHONY : libcv_tracking/cv_tracking.s
+
+# target to generate assembly for a file
+libcv_tracking/cv_tracking.cpp.s:
+	$(MAKE) -f CMakeFiles/cv__tracking.dir/build.make CMakeFiles/cv__tracking.dir/libcv_tracking/cv_tracking.cpp.s
+	$(MAKE) -f CMakeFiles/cv_tracking.dir/build.make CMakeFiles/cv_tracking.dir/libcv_tracking/cv_tracking.cpp.s
+.PHONY : libcv_tracking/cv_tracking.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -157,8 +213,13 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... edit_cache"
 	@echo "... app"
+	@echo "... edit_cache"
+	@echo "... cv__tracking"
+	@echo "... cv_tracking"
+	@echo "... libcv_tracking/cv_tracking.o"
+	@echo "... libcv_tracking/cv_tracking.i"
+	@echo "... libcv_tracking/cv_tracking.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

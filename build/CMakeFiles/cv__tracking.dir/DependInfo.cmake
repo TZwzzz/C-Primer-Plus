@@ -4,13 +4,14 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/wilson/ATK-RV1126-SDK/work/Tracking/main.cpp" "/home/wilson/ATK-RV1126-SDK/work/Tracking/build/CMakeFiles/app.dir/main.cpp.o"
+  "/home/wilson/ATK-RV1126-SDK/work/Tracking/libcv_tracking/cv_tracking.cpp" "/home/wilson/ATK-RV1126-SDK/work/Tracking/build/CMakeFiles/cv__tracking.dir/libcv_tracking/cv_tracking.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # Preprocessor definitions for this target.
 set(CMAKE_TARGET_DEFINITIONS_CXX
   "RKAIQ"
+  "cv__tracking_EXPORTS"
   )
 
 # The include file search paths:

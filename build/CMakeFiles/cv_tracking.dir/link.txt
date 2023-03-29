@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../libcv_tracking/libcv_tracking.a  CMakeFiles/cv_tracking.dir/libcv_tracking/cv_tracking.cpp.o
+/usr/bin/ranlib ../libcv_tracking/libcv_tracking.a

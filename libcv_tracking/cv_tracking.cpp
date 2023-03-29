@@ -72,7 +72,10 @@ cv::Rect2d cv_tracking(void *src_mb,int f_width,int f_height,
           tracker_stu.cv_roi.x,tracker_stu.cv_roi.y,tracker_stu.cv_roi.width,tracker_stu.cv_roi.height);
   }
   tracker_stu.tracker->update(tracker_stu.cv_frame,tracker_stu.cv_roi);
-  printf("tracker update done\r\n");
+  if(PRINT_UPDATE)
+  {
+    printf("tracker update done\r\n");
+  }
   if(PRINT_ROI)
   {
     printf("After tracker->update,roi_x:%.2f  roi_y:%.2f  width:%.2f  height:%.2f\r\n",
