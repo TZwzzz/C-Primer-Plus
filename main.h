@@ -23,7 +23,11 @@
 #include "tslib.h"
 #include "opencv2/tracking.hpp"
 #include "cv_tracking.h"
+#include "postprocess.h"
+#include "drm_func.h"
+#include "rga_func.h"
 
+#define _BASETSD_H
 #define MODEL_INPUT_SIZE 300
 
 using namespace std;
@@ -38,8 +42,20 @@ typedef struct rga_arg_s {
   RK_U32 u32Mode;
 } rga_arg_t;
 
+char *track_name[] = 
+    {
+        // "cup"
+        "truck",
+        // "bus",
+        // "bench",
+        // "car",
+        // "suitcase",
+        "train"
+    };
+
 bool tracking_init = true;
 cv::Rect2d result_rect2d = cv::Rect2d(100,100,150,200);
+cv::Rect2d roi;
 
 RK_U32 video_width = 640;
 RK_U32 video_height = 360;
@@ -56,12 +72,10 @@ struct ts_sample samp;
 bool pressKey = false;
 static bool quit = false;
 
+void *object_recognize_thread(void *args);
 void *rkmedia_thread(void *args);
-
 void *tracking_thread(void *args);
-
 void *venc_rtsp_tidp(void *args);
-
 void *key_thread(void *args);
 
 #endif
