@@ -9,6 +9,11 @@ struct tracking_stu
 };
 tracking_stu tracker_stu;
 
+
+static bool Print_roi         = false;
+static bool Draw_result_rect  = false;
+static bool Print_update      = false;
+
 static int cv_tracking_create(cv::Rect2d rect2d,int tracking_algo = KCF)
 {
   tracker_stu.cv_roi = rect2d;
@@ -30,28 +35,23 @@ static int cv_tracking_create(cv::Rect2d rect2d,int tracking_algo = KCF)
 cv::Rect2d cv_tracking(void *src_mb,int f_width,int f_height,
                   cv::Rect2d roi,bool *tracking_init,int tracking_algo)
 {
-  static bool single_use = true;
-  if(single_use)
+  if(*tracking_init)
   {
-    single_use = false;
-    if(PRINT_ROI)
+    *tracking_init = false;
+    if(Print_roi)
     {
       printf("Before cv_tracking_create,roi_x:%.2f  roi_y:%.2f  width:%.2f  height:%.2f\r\n",roi.x,roi.y,roi.width,roi.height);
     }
     cv_tracking_create(roi,tracking_algo);
     printf("cv_tracking_create done!\r\n");
-  }
-  if(*tracking_init)
-  {
-    *tracking_init = false;
-    
+    tracker_stu.cv_roi = roi;
     tracker_stu.cv_frame = Mat(f_height, f_width, CV_8UC3, src_mb);
     if (tracker_stu.cv_frame.rows == 0 || tracker_stu.cv_frame.cols == 0)
     {
       fprintf(stderr,"tracker_stu.cv_frame.rows == 0 || tracker_stu.cv_frame.cols == 0\r\n");
       exit(EXIT_FAILURE);
     }
-    if(PRINT_ROI)
+    if(Print_roi)
     {
       printf("Before tracker->init,roi_x:%.2f  roi_y:%.2f  width:%.2f  height:%.2f\r\n",
             tracker_stu.cv_roi.x,tracker_stu.cv_roi.y,tracker_stu.cv_roi.width,tracker_stu.cv_roi.height);
@@ -66,25 +66,31 @@ cv::Rect2d cv_tracking(void *src_mb,int f_width,int f_height,
     fprintf(stderr,"tracker_stu.cv_frame.rows == 0 || tracker_stu.cv_frame.cols == 0\r\n");
     exit(EXIT_FAILURE);
   }
-  if(PRINT_ROI)
+  if(Print_roi)
   {
     printf("Before tracker->update,roi_x:%.2f  roi_y:%.2f  width:%.2f  height:%.2f\r\n",
           tracker_stu.cv_roi.x,tracker_stu.cv_roi.y,tracker_stu.cv_roi.width,tracker_stu.cv_roi.height);
   }
   tracker_stu.tracker->update(tracker_stu.cv_frame,tracker_stu.cv_roi);
-  if(PRINT_UPDATE)
+  if(Print_update)
   {
     printf("tracker update done\r\n");
   }
-  if(PRINT_ROI)
+  if(Print_roi)
   {
     printf("After tracker->update,roi_x:%.2f  roi_y:%.2f  width:%.2f  height:%.2f\r\n",
           tracker_stu.cv_roi.x,tracker_stu.cv_roi.y,tracker_stu.cv_roi.width,tracker_stu.cv_roi.height);
   }
-  if(DRAW_ROI)
+  if(Draw_result_rect)
   {
     rectangle(tracker_stu.cv_frame,tracker_stu.cv_roi,Scalar(255,0,0),5,8,0);
   }
-  
   return tracker_stu.cv_roi;
+}
+
+void cv_tracking_log(bool print_roi,bool print_update,bool draw_result_rect)
+{
+  Print_roi         = print_roi;
+  Draw_result_rect  = draw_result_rect;
+  Print_update      = print_update;
 }
