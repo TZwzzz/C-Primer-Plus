@@ -123,61 +123,32 @@ app/fast:
 	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/build
 .PHONY : app/fast
 
-#=============================================================================
-# Target rules for targets named cv__tracking
+drm_func.o: drm_func.c.o
 
-# Build rule for target.
-cv__tracking: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 cv__tracking
-.PHONY : cv__tracking
-
-# fast build rule for target.
-cv__tracking/fast:
-	$(MAKE) -f CMakeFiles/cv__tracking.dir/build.make CMakeFiles/cv__tracking.dir/build
-.PHONY : cv__tracking/fast
-
-#=============================================================================
-# Target rules for targets named cv_tracking
-
-# Build rule for target.
-cv_tracking: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 cv_tracking
-.PHONY : cv_tracking
-
-# fast build rule for target.
-cv_tracking/fast:
-	$(MAKE) -f CMakeFiles/cv_tracking.dir/build.make CMakeFiles/cv_tracking.dir/build
-.PHONY : cv_tracking/fast
-
-libcv_tracking/cv_tracking.o: libcv_tracking/cv_tracking.cpp.o
-
-.PHONY : libcv_tracking/cv_tracking.o
+.PHONY : drm_func.o
 
 # target to build an object file
-libcv_tracking/cv_tracking.cpp.o:
-	$(MAKE) -f CMakeFiles/cv__tracking.dir/build.make CMakeFiles/cv__tracking.dir/libcv_tracking/cv_tracking.cpp.o
-	$(MAKE) -f CMakeFiles/cv_tracking.dir/build.make CMakeFiles/cv_tracking.dir/libcv_tracking/cv_tracking.cpp.o
-.PHONY : libcv_tracking/cv_tracking.cpp.o
+drm_func.c.o:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/drm_func.c.o
+.PHONY : drm_func.c.o
 
-libcv_tracking/cv_tracking.i: libcv_tracking/cv_tracking.cpp.i
+drm_func.i: drm_func.c.i
 
-.PHONY : libcv_tracking/cv_tracking.i
+.PHONY : drm_func.i
 
 # target to preprocess a source file
-libcv_tracking/cv_tracking.cpp.i:
-	$(MAKE) -f CMakeFiles/cv__tracking.dir/build.make CMakeFiles/cv__tracking.dir/libcv_tracking/cv_tracking.cpp.i
-	$(MAKE) -f CMakeFiles/cv_tracking.dir/build.make CMakeFiles/cv_tracking.dir/libcv_tracking/cv_tracking.cpp.i
-.PHONY : libcv_tracking/cv_tracking.cpp.i
+drm_func.c.i:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/drm_func.c.i
+.PHONY : drm_func.c.i
 
-libcv_tracking/cv_tracking.s: libcv_tracking/cv_tracking.cpp.s
+drm_func.s: drm_func.c.s
 
-.PHONY : libcv_tracking/cv_tracking.s
+.PHONY : drm_func.s
 
 # target to generate assembly for a file
-libcv_tracking/cv_tracking.cpp.s:
-	$(MAKE) -f CMakeFiles/cv__tracking.dir/build.make CMakeFiles/cv__tracking.dir/libcv_tracking/cv_tracking.cpp.s
-	$(MAKE) -f CMakeFiles/cv_tracking.dir/build.make CMakeFiles/cv_tracking.dir/libcv_tracking/cv_tracking.cpp.s
-.PHONY : libcv_tracking/cv_tracking.cpp.s
+drm_func.c.s:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/drm_func.c.s
+.PHONY : drm_func.c.s
 
 main.o: main.cpp.o
 
@@ -206,6 +177,60 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+postprocess.o: postprocess.cc.o
+
+.PHONY : postprocess.o
+
+# target to build an object file
+postprocess.cc.o:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/postprocess.cc.o
+.PHONY : postprocess.cc.o
+
+postprocess.i: postprocess.cc.i
+
+.PHONY : postprocess.i
+
+# target to preprocess a source file
+postprocess.cc.i:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/postprocess.cc.i
+.PHONY : postprocess.cc.i
+
+postprocess.s: postprocess.cc.s
+
+.PHONY : postprocess.s
+
+# target to generate assembly for a file
+postprocess.cc.s:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/postprocess.cc.s
+.PHONY : postprocess.cc.s
+
+rga_func.o: rga_func.c.o
+
+.PHONY : rga_func.o
+
+# target to build an object file
+rga_func.c.o:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/rga_func.c.o
+.PHONY : rga_func.c.o
+
+rga_func.i: rga_func.c.i
+
+.PHONY : rga_func.i
+
+# target to preprocess a source file
+rga_func.c.i:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/rga_func.c.i
+.PHONY : rga_func.c.i
+
+rga_func.s: rga_func.c.s
+
+.PHONY : rga_func.s
+
+# target to generate assembly for a file
+rga_func.c.s:
+	$(MAKE) -f CMakeFiles/app.dir/build.make CMakeFiles/app.dir/rga_func.c.s
+.PHONY : rga_func.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -213,16 +238,20 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... app"
 	@echo "... edit_cache"
-	@echo "... cv__tracking"
-	@echo "... cv_tracking"
-	@echo "... libcv_tracking/cv_tracking.o"
-	@echo "... libcv_tracking/cv_tracking.i"
-	@echo "... libcv_tracking/cv_tracking.s"
+	@echo "... app"
+	@echo "... drm_func.o"
+	@echo "... drm_func.i"
+	@echo "... drm_func.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... postprocess.o"
+	@echo "... postprocess.i"
+	@echo "... postprocess.s"
+	@echo "... rga_func.o"
+	@echo "... rga_func.i"
+	@echo "... rga_func.s"
 .PHONY : help
 
 
