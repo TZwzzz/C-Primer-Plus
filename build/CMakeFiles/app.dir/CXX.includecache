@@ -48,12 +48,6 @@ opencv2/opencv.hpp
 opencv2/tracking.hpp
 ../libcv_tracking/opencv2/tracking.hpp
 
-/home/wilson/ATK-RV1126-SDK/work/Tracking/include/postprocess.h
-stdint.h
--
-vector
--
-
 /home/wilson/ATK-RV1126-SDK/work/Tracking/librtsp/rtsp_demo.h
 stdint.h
 -
@@ -111,22 +105,6 @@ drm_func.h
 /home/wilson/ATK-RV1126-SDK/work/Tracking/drm_func.h
 rga_func.h
 /home/wilson/ATK-RV1126-SDK/work/Tracking/rga_func.h
-
-/home/wilson/ATK-RV1126-SDK/work/Tracking/postprocess.cc
-stdio.h
--
-stdlib.h
--
-math.h
--
-string.h
--
-sys/time.h
--
-./include/postprocess.h
-/home/wilson/ATK-RV1126-SDK/work/Tracking/include/postprocess.h
-stdint.h
--
 
 /opt/atk-dlrv1126-toolchain/arm-buildroot-linux-gnueabihf/sysroot/usr/include/alloca.h
 features.h

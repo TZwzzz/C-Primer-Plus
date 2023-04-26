@@ -609,7 +609,7 @@ void *object_recognize_thread(void *args)
       // putText(orig_img, detect_result_group.results[i].name, Point(left, top-16), FONT_HERSHEY_TRIPLEX, 3, Scalar(0,0,255),4,8,0);
       
     }
-    if(min_manhattan_rect2d.size().width < 5 || min_manhattan_rect2d.size().height < 5 || min_manhattan_dist == 9999)
+    if(min_manhattan_rect2d.size().width < 5 || min_manhattan_rect2d.size().height < 5 || min_manhattan_dist > 30.0)
     {
       rknn_outputs_release(ctx, io_num.n_output, outputs);
       RK_MPI_MB_ReleaseBuffer(src_mb);
@@ -617,6 +617,7 @@ void *object_recognize_thread(void *args)
       usleep(100000);
       continue;
     }
+    cout << "min_manhattan_dist:" << min_manhattan_dist << endl;
     roi = min_manhattan_rect2d;//更新roi
     tracking_init = true;//初始化追踪第一帧
     cout << "size.width:" << roi.size().width << " size.height:" << roi.size().height << endl;
