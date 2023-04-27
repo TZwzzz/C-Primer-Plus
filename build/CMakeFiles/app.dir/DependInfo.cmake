@@ -35,6 +35,7 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   ".././libcv_tracking"
   )
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/wilson/ATK-RV1126-SDK/work/Tracking/libcv_tracking/cv_tracking.cpp" "/home/wilson/ATK-RV1126-SDK/work/Tracking/build/CMakeFiles/app.dir/libcv_tracking/cv_tracking.cpp.o"
   "/home/wilson/ATK-RV1126-SDK/work/Tracking/main.cpp" "/home/wilson/ATK-RV1126-SDK/work/Tracking/build/CMakeFiles/app.dir/main.cpp.o"
   "/home/wilson/ATK-RV1126-SDK/work/Tracking/postprocess.cc" "/home/wilson/ATK-RV1126-SDK/work/Tracking/build/CMakeFiles/app.dir/postprocess.cc.o"
   )

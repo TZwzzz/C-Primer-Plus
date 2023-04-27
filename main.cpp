@@ -19,10 +19,10 @@ int main(int argc, char *argv[])
   rga_arg_t rga_arg;
   rga_arg.u32SrcWidth = video_width;
   rga_arg.u32SrcHeight = video_height;
-  rga_arg.u32RgaX = result_rect2d.x;
-  rga_arg.u32RgaY = result_rect2d.y;
-  rga_arg.u32RgaWidth = result_rect2d.width;
-  rga_arg.u32RgaHeight = result_rect2d.height;
+//   rga_arg.u32RgaX = result_rect2d.x;
+//   rga_arg.u32RgaY = result_rect2d.y;
+//   rga_arg.u32RgaWidth = result_rect2d.width;
+//   rga_arg.u32RgaHeight = result_rect2d.height;
 
   printf("\n###############################################\n");
   printf("VI CameraIdx: %d\npDeviceName: %s\nResolution: %dx%d\n\n",
@@ -541,7 +541,7 @@ void *object_recognize_thread(void *args)
 
     post_process((uint8_t *)outputs[0].buf, (uint8_t *)outputs[1].buf, (uint8_t *)outputs[2].buf, height, width,
                  conf_threshold, nms_threshold, vis_threshold, scale_w, scale_h, out_zps, out_scales, &detect_result_group);
-    double min_manhattan_dist = 9999;//最小曼哈顿距离
+    double min_manhattan_dist = 10;//最小曼哈顿距离
     cv::Rect2d min_manhattan_rect2d;
     // Draw Objects
     for (int i = 0; i < detect_result_group.count; i++)
@@ -595,33 +595,23 @@ void *object_recognize_thread(void *args)
       double track_centerPoint_y = result_rect2d.y + (result_rect2d.height/2.0);
       //计算曼哈顿距离
       double manhattan_dist = fabs(rec_centerPoint_x - track_centerPoint_x) + fabs(rec_centerPoint_y - track_centerPoint_y);
-      if(manhattan_dist < min_manhattan_dist)
+      cout << "manhattan_dist:" << manhattan_dist << endl;
+      //判断检测到方框的中心点是否在原框内
+      bool isInside = (rec_centerPoint_x > result_rect2d.x &&
+                       rec_centerPoint_x < result_rect2d.x + result_rect2d.width &&
+                       rec_centerPoint_y > result_rect2d.y && 
+                       rec_centerPoint_y < result_rect2d.y + result_rect2d.height)?true:false;
+      if((manhattan_dist < min_manhattan_dist || isInside) && w > 10 && h > 10 && !result_rect2d.empty())
       {
-        min_manhattan_dist = manhattan_dist;
-        min_manhattan_rect2d = cv::Rect2d(left,top,w,h);
+        result_rect2d = cv::Rect2d(left,top,w,h);//更新result_rect2d
+        tracking_init = true;//初始化追踪第一帧
       }
-      // printf("border=(%d %d %d %d)\n", left, top, w, h);
-
-      // 采用opencv来绘制矩形框,颜色格式是B、G、R
-      // using namespace cv;
-      // Mat orig_img = Mat(video_height, video_width, CV_8UC3, RK_MPI_MB_GetPtr(src_mb));//黑白灰图案
-      // cv::rectangle(orig_img,cv::Point(left, top),cv::Point(right, bottom),cv::Scalar(0,255,255),5,8,0);
-      // putText(orig_img, detect_result_group.results[i].name, Point(left, top-16), FONT_HERSHEY_TRIPLEX, 3, Scalar(0,0,255),4,8,0);
-      
+      else if(w > 5 && h > 5 && result_rect2d.empty())
+      {
+        result_rect2d = cv::Rect2d(left,top,w,h);//更新result_rect2d
+      }
     }
-    if(min_manhattan_rect2d.size().width < 5 || min_manhattan_rect2d.size().height < 5 || min_manhattan_dist > 30.0)
-    {
-      rknn_outputs_release(ctx, io_num.n_output, outputs);
-      RK_MPI_MB_ReleaseBuffer(src_mb);
-      src_mb = NULL;
-      usleep(100000);
-      continue;
-    }
-    cout << "min_manhattan_dist:" << min_manhattan_dist << endl;
-    roi = min_manhattan_rect2d;//更新roi
-    tracking_init = true;//初始化追踪第一帧
-    cout << "size.width:" << roi.size().width << " size.height:" << roi.size().height << endl;
-    cout << "tracking size = " << roi.size() << endl;
+    
     rknn_outputs_release(ctx, io_num.n_output, outputs);
     RK_MPI_MB_ReleaseBuffer(src_mb);
     src_mb = NULL;
@@ -654,57 +644,61 @@ void *rkmedia_thread(void *args)
       printf("ERROR: RK_MPI_SYS_GetMediaBuffer get null buffer!\n");
       break;
     }
-    /********************************/
-    rga_buffer_t pat;
-    rga_buffer_t src;
-    MEDIA_BUFFER pat_mb = NULL;
-    int STATUS;
-    MB_IMAGE_INFO_S stImageInfo = {
-        rga_arg->u32SrcWidth, rga_arg->u32SrcHeight, rga_arg->u32SrcWidth,
-        rga_arg->u32SrcHeight, IMAGE_TYPE_ARGB8888};
-    pat_mb = RK_MPI_MB_CreateImageBuffer(&stImageInfo, RK_TRUE, 0);
-    if (!pat_mb) 
+    if(!result_rect2d.empty())
     {
-      printf("ERROR: RK_MPI_MB_CreateImageBuffer get null buffer!\n");
-      break;
+        /********************************/
+        rga_buffer_t pat;
+        rga_buffer_t src;
+        MEDIA_BUFFER pat_mb = NULL;
+        int STATUS;
+        MB_IMAGE_INFO_S stImageInfo = {
+            rga_arg->u32SrcWidth, rga_arg->u32SrcHeight, rga_arg->u32SrcWidth,
+            rga_arg->u32SrcHeight, IMAGE_TYPE_ARGB8888};
+        pat_mb = RK_MPI_MB_CreateImageBuffer(&stImageInfo, RK_TRUE, 0);
+        if (!pat_mb) 
+        {
+        printf("ERROR: RK_MPI_MB_CreateImageBuffer get null buffer!\n");
+        break;
+        }
+        src = wrapbuffer_fd(RK_MPI_MB_GetFD(src_mb), rga_arg->u32SrcWidth,
+                            rga_arg->u32SrcHeight, RK_FORMAT_YCbCr_420_SP);
+        pat = wrapbuffer_fd(RK_MPI_MB_GetFD(pat_mb), rga_arg->u32SrcWidth,
+                                rga_arg->u32SrcHeight, RK_FORMAT_RGBA_8888);
+        RGA_Clear_Rect(pat, rga_arg->u32SrcWidth, rga_arg->u32SrcHeight);
+        rga_arg->u32RgaX = (RK_U32)result_rect2d.x;
+        rga_arg->u32RgaY = (RK_U32)result_rect2d.y;
+        rga_arg->u32RgaWidth = (RK_U32)result_rect2d.width;
+        rga_arg->u32RgaHeight = (RK_U32)result_rect2d.height;
+        if(rga_arg->u32RgaX + rga_arg->u32RgaWidth > rga_arg->u32SrcWidth)
+        {
+        rga_arg->u32RgaX = rga_arg->u32SrcWidth - rga_arg->u32RgaWidth;
+        }
+        if(rga_arg->u32RgaY + rga_arg->u32RgaHeight > rga_arg->u32SrcHeight)
+        {
+        rga_arg->u32RgaY = rga_arg->u32SrcHeight - rga_arg->u32RgaHeight;
+        }
+        printf("draw:[%d %d %d %d]\r\n",rga_arg->u32RgaX,rga_arg->u32RgaY,
+                rga_arg->u32RgaWidth,rga_arg->u32RgaHeight);
+        STATUS = RGA_Rect_draw2(pat, rga_arg->u32RgaX, rga_arg->u32RgaY,
+                            rga_arg->u32RgaWidth, rga_arg->u32RgaHeight, 5);
+        if (STATUS != IM_STATUS_SUCCESS)
+        printf(">>>>>>>>>>>>>>>>RGA_Rect_draw failed: %s\n",imStrError(STATUS));
+        STATUS = imcomposite(src, pat, src, IM_ALPHA_BLEND_DST_OVER);
+        if (STATUS != IM_STATUS_SUCCESS) 
+        {
+        printf(">>>>>>>>>>>>>>>>imblend failed: %s\n", imStrError(STATUS));
+        RK_MPI_MB_ReleaseBuffer(pat_mb);
+        RK_MPI_MB_ReleaseBuffer(src_mb);
+        quit = true;
+        break;
+        }
+        
+        RK_MPI_MB_ReleaseBuffer(pat_mb);
+        /********************************/
     }
-    src = wrapbuffer_fd(RK_MPI_MB_GetFD(src_mb), rga_arg->u32SrcWidth,
-                        rga_arg->u32SrcHeight, RK_FORMAT_YCbCr_420_SP);
-    pat = wrapbuffer_fd(RK_MPI_MB_GetFD(pat_mb), rga_arg->u32SrcWidth,
-                              rga_arg->u32SrcHeight, RK_FORMAT_RGBA_8888);
-    RGA_Clear_Rect(pat, rga_arg->u32SrcWidth, rga_arg->u32SrcHeight);
-    rga_arg->u32RgaX = (RK_U32)result_rect2d.x;
-    rga_arg->u32RgaY = (RK_U32)result_rect2d.y;
-    rga_arg->u32RgaWidth = (RK_U32)result_rect2d.width;
-    rga_arg->u32RgaHeight = (RK_U32)result_rect2d.height;
-    if(rga_arg->u32RgaX + rga_arg->u32RgaWidth > rga_arg->u32SrcWidth)
-    {
-      rga_arg->u32RgaX = rga_arg->u32SrcWidth - rga_arg->u32RgaWidth;
-    }
-    if(rga_arg->u32RgaY + rga_arg->u32RgaHeight > rga_arg->u32SrcHeight)
-    {
-      rga_arg->u32RgaY = rga_arg->u32SrcHeight - rga_arg->u32RgaHeight;
-    }
-    printf("draw:[%d %d %d %d]\r\n",rga_arg->u32RgaX,rga_arg->u32RgaY,
-            rga_arg->u32RgaWidth,rga_arg->u32RgaHeight);
-    STATUS = RGA_Rect_draw2(pat, rga_arg->u32RgaX, rga_arg->u32RgaY,
-                        rga_arg->u32RgaWidth, rga_arg->u32RgaHeight, 5);
-    if (STATUS != IM_STATUS_SUCCESS)
-      printf(">>>>>>>>>>>>>>>>RGA_Rect_draw failed: %s\n",imStrError(STATUS));
-    STATUS = imcomposite(src, pat, src, IM_ALPHA_BLEND_DST_OVER);
-    if (STATUS != IM_STATUS_SUCCESS) 
-    {
-      printf(">>>>>>>>>>>>>>>>imblend failed: %s\n", imStrError(STATUS));
-      RK_MPI_MB_ReleaseBuffer(pat_mb);
-      RK_MPI_MB_ReleaseBuffer(src_mb);
-      quit = true;
-      break;
-    }
+    
     RK_MPI_SYS_SendMediaBuffer(RK_ID_VENC, 0, src_mb);
-    RK_MPI_MB_ReleaseBuffer(pat_mb);
     RK_MPI_MB_ReleaseBuffer(src_mb);
-
-    /********************************/
     src_mb = NULL;
   }
   return NULL;
@@ -713,13 +707,6 @@ void *rkmedia_thread(void *args)
 void *tracking_thread(void *args)
 {
   void *frame;
-  rga_arg_t *rga_arg = (rga_arg_t *)args;
-  
-  roi.x = (double)rga_arg->u32RgaX;
-  roi.y = (double)rga_arg->u32RgaY;
-  roi.width = (double)rga_arg->u32RgaWidth;
-  roi.height = (double)rga_arg->u32RgaHeight;
-  cv_tracking_log(0,0,0);
 
   while(1)
   {
@@ -741,14 +728,15 @@ void *tracking_thread(void *args)
       break;
     }
     printf("get src_mb\r\n");
-    frame = RK_MPI_MB_GetPtr(src_mb);
-
-    clock_t  startTime = clock();
-    result_rect2d = cv_tracking(frame,video_width,video_height,roi,&tracking_init,MOSSE);
-    clock_t endTime = clock();
-    double totalTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
-    cout << totalTime << "s" << endl;
-
+    if(!result_rect2d.empty())
+    {
+        frame = RK_MPI_MB_GetPtr(src_mb);
+        clock_t  startTime = clock();
+        cv_tracking(frame,video_width,video_height,result_rect2d,&tracking_init,MOSSE);
+        clock_t endTime = clock();
+        double totalTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
+        cout << totalTime << "s" << endl;
+    }
     RK_MPI_MB_ReleaseBuffer(src_mb);
     src_mb = NULL;
   }

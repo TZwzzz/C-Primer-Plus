@@ -46,16 +46,15 @@ char *track_name[] =
     {
         // "cup"
         "truck",
-        // "bus",
+        "bus",
         // "bench",
-        // "car",
+        "car",
         // "suitcase",
         "train"
     };
 
 bool tracking_init = true;
-cv::Rect2d result_rect2d = cv::Rect2d(100,100,150,200);
-cv::Rect2d roi;
+cv::Rect2d result_rect2d;
 
 RK_U32 video_width = 640;
 RK_U32 video_height = 360;
