@@ -4,8 +4,9 @@
 #include "opencv2/opencv.hpp"
 #include "opencv2/tracking.hpp"
 
-#define KCF     0
-#define MOSSE   1
+#define KCF         0
+#define MOSSE       1
+#define MEANSHIFT   2
 
 int cv_tracking(void *src_mb,int f_width,int f_height,
                   cv::Rect2d &roi,bool *tracking_init,int tracking_algo = KCF);
